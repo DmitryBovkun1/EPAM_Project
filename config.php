@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 
     //Адрес базы данных
     const Clinic_DBSERVER = '127.0.0.1';
@@ -7,7 +7,7 @@
     const Clinic_DBUSER = 'mysql';
 
     //Пароль БД
-    const Clinic_DBPASSWORD = 'Lvbnhbq';
+    const Clinic_DBPASSWORD = '';
 
     //БД
     const Clinic_DATABASE = 'epamproject';
