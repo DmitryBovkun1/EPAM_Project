@@ -33,7 +33,7 @@ session_start();
                 <?php } elseif ($_SESSION['role'] == 1 && $_SESSION['user'] == true) {?>
                     <a class="nav-menu-item" type="submit" style="cursor: pointer;" onclick="window.location.href='/history.php'">Обрати заявки на обробку</a>
                 <?php } elseif ($_SESSION['role'] == 0 && $_SESSION['user'] == true){?>
-                    <a class="nav-menu-item" type="submit" style="cursor: pointer;" onclick="window.location.href='/index.php'">Вітаємо, <?php echo $_SESSION['user']; ?></a>
+                    <a class="nav-menu-item" type="submit" style="cursor: pointer;" onclick="window.location.href='/index.php'">Вітаємо, <?php echo $_SESSION['username']; ?></a>
                 <?php } else {?>
                     <a class="nav-menu-item" type="submit" style="cursor: pointer;" onclick="window.location.href='scripts/auth/auth_form.php'">Авторизація</a>
                 <?php } ?>
@@ -51,11 +51,27 @@ session_start();
                 </div>
 
             </div>
-
-            <div class="menu-button"></div>
+            <button class="open-btn" onclick="openNav()">&#9776;</button>
         </div>
     </nav>
 </header>
+<div class="nav-bar-mobile" id="mySidepanel">
+    <a href="javascript:void(0)" class="close-btn" onclick="closeNav()">&times;</a>
+    <a href="<?php echo Clinic_Workdir?>">Головна</a>
+    <a href="<?php echo Clinic_Workdir?>/history.php">Пошук заявок</a>
+    <?php if ($_SESSION['role'] == 2 && $_SESSION['user'] == true){?>
+        <a href="<?php echo Clinic_Workdir?>/panel.php">Змінити роль користувача</a>
+    <?php } ?>
+    <?php if ($_SESSION['role'] == 1 && $_SESSION['user'] == true) {?>
+        <a href="<?php echo Clinic_Workdir?>/history.php">Обрати заявки на обробку</a>
+    <?php } ?>
+    <?php if ($_SESSION['user'] == false) { ?>
+        <a href="<?php echo Clinic_Workdir?>/scripts/auth/auth_form.php">Авторизуватися</a>
+        <a href="<?php echo Clinic_Workdir?>/scripts/reg/reg-form.php">Реєстрація</a>
+    <?php } else { ?>
+        <a href="<?php echo Clinic_Workdir?>/exit.php">Вийти</a>
+    <?php } ?>
+</div>
 <div class="page-wrapper">
     <div style="background-color: #FFFFFF; box-shadow: 0px 0px 7px 3px beige;
             border-radius: 20px; max-width: 90%; min-width: 80%; height: 700px; text-align: center; top: 10px;">
@@ -64,9 +80,9 @@ session_start();
             if (isset($_GET['select1']) && isset($_GET['select2']) && isset($_GET['name']) && isset($_GET['phone']) && isset($_GET['page'])) {
                 $count = 6;
                 $page = $_GET['page']; $page--;
-                $sql = "SELECT * FROM `requests` where `user_name` like '%" . $_GET['name'] . "%' and `user_phone` like '%" . $_GET['phone'] . "%' 
+                $sql = "SELECT * FROM (SELECT * FROM `requests` where `user_name` like '%" . $_GET['name'] . "%' and `user_phone` like '%" . $_GET['phone'] . "%' 
                 and `doctor_profession` like '%" . $_GET['select1'] . "%' and `requests_status` like '%" . $_GET['select2'] . "%'
-                 and `requests_status`<>'CLOSED' order by `request_time` limit " . $count*$page . ", " . $count;
+                 order by `request_time` limit " . $count*$page . ", " . $count . ") A where A.`requests_status`<>'CLOSED'";
                 $db_connect = new mysqli(Clinic_DBSERVER, Clinic_DBUSER, Clinic_DBPASSWORD, Clinic_DATABASE);
                 $res = mysqli_query($db_connect, $sql);
                 if (mysqli_num_rows($res) > 0) {
@@ -83,11 +99,33 @@ session_start();
                     while ($req = $res->fetch_assoc()) {
                         $sqlUpdateFirst = "UPDATE `requests` set `requests_status`= \"INPROGRESS\" where `requests_id` = " . $req['requests_id'];
                         $r = mysqli_query($db_connect, $sqlUpdateFirst);
+                        $pro = $req['doctor_profession'];
+                        switch($req['doctor_profession'])
+                        {
+                            case 'dentist':
+                                $pro = 'Стоматолог';
+                                break;
+                            case 'traumatologist':
+                                $pro = 'Травматолог';
+                                break;
+                            case 'surgeon':
+                                $pro = 'Хірург';
+                                break;
+                            case 'oculist':
+                                $pro = 'Окуліст';
+                                break;
+                            case 'lor':
+                                $pro = 'Лор';
+                                break;
+                            case 'therapist':
+                                $pro = 'Терапевт';
+                                break;
+                        }
                         echo "<tr>";
                         echo "<td class = \"td\">" . $req['requests_id'] . "</td>";
                         echo "<td class = \"td\">" . $req['user_name'] . "</td>";
                         echo "<td class = \"td\">" . $req['user_phone'] . "</td>";
-                        echo "<td class = \"td\">" . $req['doctor_profession'] . "</td>";
+                        echo "<td class = \"td\">" . $pro . "</td>";
                         echo "<td class = \"td\">" . $req['requests_status'] . "</td>";
                         echo "<td class = \"td\">" . $req['request_time'] . "</td>";
                         echo "</tr>";

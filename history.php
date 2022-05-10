@@ -33,7 +33,7 @@ session_start();
                 <?php } elseif ($_SESSION['role'] == 1 && $_SESSION['user'] == true) {?>
                     <a class="nav-menu-item" type="submit" style="cursor: pointer;" onclick="window.location.href='/history.php'">Обрати заявки на обробку</a>
                 <?php } elseif ($_SESSION['role'] == 0 && $_SESSION['user'] == true){?>
-                    <a class="nav-menu-item" type="submit" style="cursor: pointer;" onclick="window.location.href='/index.php'">Вітаємо, <?php echo $_SESSION['user']; ?></a>
+                    <a class="nav-menu-item" type="submit" style="cursor: pointer;" onclick="window.location.href='/index.php'">Вітаємо, <?php echo $_SESSION['username']; ?></a>
                 <?php } else {?>
                     <a class="nav-menu-item" type="submit" style="cursor: pointer;" onclick="window.location.href='scripts/auth/auth_form.php'">Авторизація</a>
                 <?php } ?>
@@ -51,13 +51,29 @@ session_start();
                 </div>
 
             </div>
-
-            <div class="menu-button"></div>
+            <button class="open-btn" onclick="openNav()">&#9776;</button>
         </div>
     </nav>
 </header>
-<div class="page-wrapper">
-    <div class = "col-md-6">
+<div class="nav-bar-mobile" id="mySidepanel">
+    <a href="javascript:void(0)" class="close-btn" onclick="closeNav()">&times;</a>
+    <a href="<?php echo Clinic_Workdir?>">Головна</a>
+    <a href="<?php echo Clinic_Workdir?>/history.php">Пошук заявок</a>
+    <?php if ($_SESSION['role'] == 2 && $_SESSION['user'] == true){?>
+        <a href="<?php echo Clinic_Workdir?>/panel.php">Змінити роль користувача</a>
+    <?php } ?>
+    <?php if ($_SESSION['role'] == 1 && $_SESSION['user'] == true) {?>
+        <a href="<?php echo Clinic_Workdir?>/history.php">Обрати заявки на обробку</a>
+    <?php } ?>
+    <?php if ($_SESSION['user'] == false) { ?>
+        <a href="<?php echo Clinic_Workdir?>/scripts/auth/auth_form.php">Авторизуватися</a>
+        <a href="<?php echo Clinic_Workdir?>/scripts/reg/reg-form.php">Реєстрація</a>
+    <?php } else { ?>
+        <a href="<?php echo Clinic_Workdir?>/exit.php">Вийти</a>
+    <?php } ?>
+</div>
+<div class="col-center page-wrapper">
+    <div>
         <section class="registration-section">
             <div class="registration-form-wrapper">
                 <form style="background-color: #FFFFFF; box-shadow: 0px 0px 7px 3px beige;
@@ -71,33 +87,36 @@ session_start();
 
                     <label class="form-label" for="select">Лікар</label> <br>
                     <select class="form-input form-input-select" name="select1" id="select1" required>
-                        <option value="dentist">Стоматолог</option>
-                        <option value="traumatologist">Травматолог</option>
-                        <option value="surgeon">Хірург</option>
-                        <option value="oculist">Окуліст</option>
-                        <option value="lor">Лор</option>
-                        <option value="therapist">Терапевт</option>
-                        <option value="" selected>Усі</option>
+                        <option value="dentist" <?php if(isset($_GET['select1']) && $_GET['select1']=="dentist") { ?> selected <?php }?>>Стоматолог</option>
+                        <option value="traumatologist" <?php if(isset($_GET['select1']) && $_GET['select1']=="traumatologist") { ?> selected <?php }?>>Травматолог</option>
+                        <option value="surgeon" <?php if(isset($_GET['select1']) && $_GET['select1']=="surgeon") { ?> selected <?php }?>>Хірург</option>
+                        <option value="oculist" <?php if(isset($_GET['select1']) && $_GET['select1']=="oculist") { ?> selected <?php }?>>Окуліст</option>
+                        <option value="lor" <?php if(isset($_GET['select1']) && $_GET['select1']=="lor") { ?> selected <?php }?>>Лор</option>
+                        <option value="therapist" <?php if(isset($_GET['select1']) && $_GET['select1']=="therapist") { ?> selected <?php }?>>Терапевт</option>
+                        <option value="" <?php if(!isset($_GET['select1']) || $_GET['select1']=="") { ?> selected <?php }?>>Усі</option>
                     </select> <br>
 
                     <label class="form-label" for="select">Статус заявки</label> <br>
                     <select class="form-input form-input-select" name="select2" id="select2" required>
-                        <option value="NEW">NEW</option>
-                        <option value="INPROGRESS">INPROGRESS</option>
-                        <option value="CLOSED">CLOSED</option>
-                        <option value="" selected>DEFAULT</option>
+                        <option value="NEW" <?php if(isset($_GET['select2']) && $_GET['select2']=="NEW") { ?> selected <?php }?>>NEW</option>
+                        <option value="INPROGRESS" <?php if(isset($_GET['select2']) && $_GET['select2']=="INPROGRESS") { ?> selected <?php }?>>INPROGRESS</option>
+                        <option value="CLOSED" <?php if(isset($_GET['select2']) && $_GET['select2']=="CLOSED") { ?> selected <?php }?>>CLOSED</option>
+                        <option value="" <?php if(!isset($_GET['select2']) || $_GET['select2']=="") { ?> selected <?php }?>>DEFAULT</option>
                     </select><br>
                     <button class="form-submit-button" type="submit">Пошук</button>
+                    <br><a href="<?php echo Clinic_Workdir?>/history.php?name=&phone=&select1=&select2=">Переглянути всі</a>
                 </form>
 
             </div>
         </section>
     </div>
-    <div class = "col-md-6" style="background-color: #FFFFFF; box-shadow: 0px 0px 7px 3px beige;
-            border-radius: 20px; max-width: 90%; min-width: 80%; height: 700px; text-align: center; top: 10px; float:right; @media(max-width: 720px) {}">
+    <div class="div-second-block" style="background-color: #FFFFFF; box-shadow: 0px 0px 7px 3px beige;
+            border-radius: 20px; max-width: 90%; min-width: 80%; height: 700px; text-align: center; top: 10px; float:right;">
         <?php
-            if(isset($_GET['select1']) || isset($_GET['select2']) || isset($_GET['name']) || isset($_GET['phone']))
-            {
+                if(!isset($_GET['select1'])){$_GET['select1'] = '';}
+                if(!isset($_GET['select2'])){$_GET['select2'] = '';}
+                if(!isset($_GET['name'])){$_GET['name'] = $_SESSION['username'];}
+                if(!isset($_GET['phone'])){$_GET['phone'] = $_SESSION['phone'];}
                 $db_connect = new mysqli(Clinic_DBSERVER, Clinic_DBUSER, Clinic_DBPASSWORD, Clinic_DATABASE);
                 $page = isset($_GET['page']) ? $_GET['page'] : 1;
                 $page--;
@@ -196,15 +215,10 @@ session_start();
                 {
                     echo '<h2 class="form-title" style = "top:40%; text-align: center; ">Заявки за даними критеріями пошуку не знайдені</h2> <br>';
                 }
-            }
-            else
-            {
-                echo '<h2 class="form-title" style = "top:40%; text-align: center; ">Спочатку введіть параметри пошуку</h2> <br>';
-            }
         ?>
     </div>
 </div>
-<footer class="footer secondary-text">
+<footer class="footer secondary-text footer-color">
         <span class="footer-credentials">
             ©2022 Healthy Life. Всі права захищені.
         </span>

@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <?php include ('./../../config.php');
-include ('./../func/funct.php'); ?>
+include ('./../func/funct.php');
+session_start();
+?>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -29,17 +31,17 @@ include ('./../func/funct.php'); ?>
                     <?php } elseif ($_SESSION['role'] == 1 && $_SESSION['user'] == true) {?>
                         <a class="nav-menu-item" type="submit" style="cursor: pointer;" onclick="window.location.href='/history.php'">Обрати заявки на обробку</a>
                     <?php } elseif ($_SESSION['role'] == 0 && $_SESSION['user'] == true){?>
-                        <a class="nav-menu-item" type="submit" style="cursor: pointer;" onclick="window.location.href='/index.php'">Вітаємо, <?php echo $_SESSION['user']; ?></a>
+                        <a class="nav-menu-item" type="submit" style="cursor: pointer;" onclick="window.location.href='/index.php'">Вітаємо, <?php echo $_SESSION['username']; ?></a>
                     <?php } else {?>
-                        <a class="nav-menu-item" type="submit" style="cursor: pointer;" onclick="window.location.href='../auth/auth_form.php'">Авторизація</a>
+                        <a class="nav-menu-item" type="submit" style="cursor: pointer;" onclick="window.location.href='scripts/auth/auth_form.php'">Авторизація</a>
                     <?php } ?>
 
                     <div class="dropdown nav-menu-icon">
                         <button onclick="myFunction()" class="drop-btn"></button>
                         <div id="myDropdown" class="dropdown-content">
                             <?php if ($_SESSION['user'] == false) { ?>
-                                <a style="cursor: pointer;" onclick="window.location.href='../auth/auth_form.php'">Авторизація</a>
-                                <a style="cursor: pointer;" onclick="window.location.href='reg-form.php'">Реєстрація</a>
+                                <a style="cursor: pointer;" onclick="window.location.href='scripts/auth/auth_form.php'">Авторизація</a>
+                                <a style="cursor: pointer;" onclick="window.location.href='scripts/reg/reg-form.php'">Реєстрація</a>
                             <?php } else { ?>
                                 <a style="cursor: pointer;" onclick="window.location.href='/exit.php'">Вийти</a>
                             <?php }?>
@@ -47,11 +49,27 @@ include ('./../func/funct.php'); ?>
                     </div>
 
                 </div>
-
-                <div class="menu-button"></div>
+                <button class="open-btn" onclick="openNav()">&#9776;</button>
             </div>
         </nav>
     </header>
+    <div class="nav-bar-mobile" id="mySidepanel">
+        <a href="javascript:void(0)" class="close-btn" onclick="closeNav()">&times;</a>
+        <a href="<?php echo Clinic_Workdir?>">Головна</a>
+        <a href="<?php echo Clinic_Workdir?>/history.php">Пошук заявок</a>
+        <?php if ($_SESSION['role'] == 2 && $_SESSION['user'] == true){?>
+            <a href="<?php echo Clinic_Workdir?>/panel.php">Змінити роль користувача</a>
+        <?php } ?>
+        <?php if ($_SESSION['role'] == 1 && $_SESSION['user'] == true) {?>
+            <a href="<?php echo Clinic_Workdir?>/history.php">Обрати заявки на обробку</a>
+        <?php } ?>
+        <?php if ($_SESSION['user'] == false) { ?>
+            <a href="<?php echo Clinic_Workdir?>/scripts/auth/auth_form.php">Авторизуватися</a>
+            <a href="<?php echo Clinic_Workdir?>/scripts/reg/reg-form.php">Реєстрація</a>
+        <?php } else { ?>
+            <a href="<?php echo Clinic_Workdir?>/exit.php">Вийти</a>
+        <?php } ?>
+    </div>
     <div class="page-wrapper">
         <section class="registration-section">
             <div class="registration-form-wrapper">
@@ -79,7 +97,7 @@ include ('./../func/funct.php'); ?>
                         $res = mysqlQuery($sql);
 
                         if(mysqli_num_rows($res) == 0)
-                            $err[] = 'Ключ активації нет вірний!';
+                            $err[] = 'Ключ активації не вірний!';
 
                         if(is_countable($err) > 0)
                             echo showErrorMessage($err);
@@ -93,7 +111,7 @@ include ('./../func/funct.php'); ?>
                             $res = mysqli_query($db_connect, $sql);
 
                             $title = 'Ваш аккаунт на ' . Clinic_Workdir . ' успішно активований';
-                            $message = 'Вітаю, ваш акаунт на сайті http://epamproject.com успішно активований';
+                            $message = 'Вітаю, ваш акаунт на сайті ' . Clinic_Workdir . ' успішно активований';
 
                             sendMessageMail($email, Clinic_MAIL_AUTOR, $title, $message);
 
@@ -128,39 +146,39 @@ include ('./../func/funct.php'); ?>
                                 {
                                     $sql = 'SELECT `user_email`
                                         FROM `users`
-                                        WHERE `user_email` = "'. $_POST['email'] .'"';
+                                        WHERE `user_email` = "'. $_POST['email'] .'" or `user_phone` = "' . $_POST['phone'] . '"';
                                     $res = mysqli_query($db_connect, $sql);
                                     if(mysqli_num_rows($res) != 0)
-                                        $err[] = 'На жаль email або телефон: <b>'. $_POST['email'] .'</b> зайнятий!';
+                                        $err[] = 'На жаль email - <b>' . $_POST['email'] . ' </b> або телефон - <b>'. $_POST['phone'] .'</b> зайнятий!';
 
-                                        if(is_countable($err) > 0)
-                                            echo showErrorMessage($err);
-                                        else
-                                        {
-                                            $salt = salt();
+                                    if(is_countable($err) > 0)
+                                        echo showErrorMessage($err);
+                                    else
+                                    {
+                                        $salt = salt();
 
-                                            $pass = md5(md5($_POST['pass']).$salt);
+                                        $pass = md5(md5($_POST['pass']).$salt);
 
-                                            $sql = 'INSERT INTO `users` (`user_name`, `user_passwd`, `user_salt`, `active_hex`, `user_phone`, `user_role`, `user_status`, `user_email`)
-                                                VALUES("'. $_POST['name'] .'",
-                                                "'. $pass .'",
-                                                "'. $salt .'",
-                                                "'. md5($salt) .'",
-                                                "'. $_POST['phone'] .'",
-                                                0,
-                                                FALSE,
-                                                "'. $_POST['email'] .'"
-                                            )';
-                                            $res = mysqli_query($db_connect, $sql);
-                                            $url = Clinic_HOST .'/?mode=reg&key='. md5($salt);
-                                            $title = 'Регистрация на ' . Clinic_Workdir;
-                                            $message = 'Для активації акаунту перейдіть за посиланням
-                                            <a href="'. $url .'">'. $url .'</a>';
+                                        $sql = 'INSERT INTO `users` (`user_name`, `user_passwd`, `user_salt`, `active_hex`, `user_phone`, `user_role`, `user_status`, `user_email`)
+                                            VALUES("'. $_POST['name'] .'",
+                                            "'. $pass .'",
+                                            "'. $salt .'",
+                                            "'. md5($salt) .'",
+                                            "'. $_POST['phone'] .'",
+                                            0,
+                                            FALSE,
+                                            "'. $_POST['email'] .'"
+                                        )';
+                                        $res = mysqli_query($db_connect, $sql);
+                                        $url = Clinic_HOST .'/?mode=reg&key='. md5($salt);
+                                        $title = 'Регистрация на ' . Clinic_Workdir;
+                                        $message = 'Для активації акаунту перейдіть за посиланням
+                                        <a href="'. $url .'">'. $url .'</a>';
 
-                                            sendMessageMail($_POST['email'], Clinic_MAIL_AUTOR, $title, $message);
-                                            header('Location:'. Clinic_HOST .'scripts/reg/reg.php?mode=reg&status=ok');
-                                            exit;
-                                        }
+                                        sendMessageMail($_POST['email'], Clinic_MAIL_AUTOR, $title, $message);
+                                        header('Location:'. Clinic_HOST .'scripts/reg/reg.php?mode=reg&status=ok');
+                                        exit;
+                                    }
                                 }
                         }
                     }

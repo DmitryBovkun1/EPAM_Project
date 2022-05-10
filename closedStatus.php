@@ -20,9 +20,9 @@ session_start();
             if (isset($_GET['select1']) && isset($_GET['select2']) && isset($_GET['name']) && isset($_GET['phone']) && isset($_GET['page'])) {
                 $count = 6;
                 $page = $_GET['page']; $page--;
-                $sql = "SELECT * FROM `requests` where `user_name` like '%" . $_GET['name'] . "%' and `user_phone` like '%" . $_GET['phone'] . "%' 
+                $sql = "SELECT * FROM (SELECT * FROM `requests` where `user_name` like '%" . $_GET['name'] . "%' and `user_phone` like '%" . $_GET['phone'] . "%' 
                     and `doctor_profession` like '%" . $_GET['select1'] . "%' and `requests_status` like '%" . $_GET['select2'] . "%'
-                     and `requests_status`<>'CLOSED' order by `request_time` limit " . $count*$page . ", " . $count;
+                     order by `request_time` limit " . $count*$page . ", " . $count . ") A where A.`requests_status`<>'CLOSED'";
                 $db_connect = new mysqli(Clinic_DBSERVER, Clinic_DBUSER, Clinic_DBPASSWORD, Clinic_DATABASE);
                 $res = mysqli_query($db_connect, $sql);
                 if (mysqli_num_rows($res) > 0) {
@@ -31,26 +31,26 @@ session_start();
                         $r = mysqli_query($db_connect, $sqlUpdateSecond);
                     }
                 ?>
-                    <img class = "success-form-image" src="./Assets/success.png">
+                    <img class = "success-form-image" src="./Assets/ok.jpg">
                     <div class = "notify-div-block-text">
                     <div class = "success-form-title">Заявки закриті</div>
                     <div class = "success-form-text">Вказані вами заяви успішно закриті</div>
                 <?php }
                 else
                 {?>
-                        <img class = "success-form-image" src="./Assets/success.png">
+                        <img class = "success-form-image" src="./Assets/fail.png">
                         <div class = "notify-div-block-text">
-                            <div class = "success-form-title">Заявки закриті</div>
-                            <div class = "success-form-text">Вказані вами заяви успішно закриті</div>
+                            <div class = "success-form-title">Заявки не закриті</div>
+                            <div class = "success-form-text">Вказані вами заяви не закриті, оскільки відкритих заяв за заданими критеріями не виявлено</div>
                             <?php
                 }
             }
             else
             {?>
-                            <img class = "success-form-image" src="./Assets/success.png">
+                            <img class = "success-form-image" src="./Assets/fail.png">
                             <div class = "notify-div-block-text">
-                            <div class = "success-form-title">Заявки закриті</div>
-                            <div class = "success-form-text">Вказані вами заяви успішно закриті</div>
+                            <div class = "success-form-title">Заявки не закриті</div>
+                            <div class = "success-form-text">Вказані вами заяви не закриті, оскільки один з критеріїв не заданий</div>
             <?php
             }
             ?>

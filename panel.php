@@ -33,7 +33,7 @@ session_start();
                 <?php } elseif ($_SESSION['role'] == 1 && $_SESSION['user'] == true) {?>
                     <a class="nav-menu-item" type="submit" style="cursor: pointer;" onclick="window.location.href='/history.php'">Обрати заявки на обробку</a>
                 <?php } elseif ($_SESSION['role'] == 0 && $_SESSION['user'] == true){?>
-                    <a class="nav-menu-item" type="submit" style="cursor: pointer;" onclick="window.location.href='/index.php'">Вітаємо, <?php echo $_SESSION['user']; ?></a>
+                    <a class="nav-menu-item" type="submit" style="cursor: pointer;" onclick="window.location.href='/index.php'">Вітаємо, <?php echo $_SESSION['username']; ?></a>
                 <?php } else {?>
                     <a class="nav-menu-item" type="submit" style="cursor: pointer;" onclick="window.location.href='scripts/auth/auth_form.php'">Авторизація</a>
                 <?php } ?>
@@ -51,11 +51,27 @@ session_start();
                 </div>
 
             </div>
-
-            <div class="menu-button"></div>
+            <button class="open-btn" onclick="openNav()">&#9776;</button>
         </div>
     </nav>
 </header>
+<div class="nav-bar-mobile" id="mySidepanel">
+    <a href="javascript:void(0)" class="close-btn" onclick="closeNav()">&times;</a>
+    <a href="<?php echo Clinic_Workdir?>">Головна</a>
+    <a href="<?php echo Clinic_Workdir?>/history.php">Пошук заявок</a>
+    <?php if ($_SESSION['role'] == 2 && $_SESSION['user'] == true){?>
+        <a href="<?php echo Clinic_Workdir?>/panel.php">Змінити роль користувача</a>
+    <?php } ?>
+    <?php if ($_SESSION['role'] == 1 && $_SESSION['user'] == true) {?>
+        <a href="<?php echo Clinic_Workdir?>/history.php">Обрати заявки на обробку</a>
+    <?php } ?>
+    <?php if ($_SESSION['user'] == false) { ?>
+        <a href="<?php echo Clinic_Workdir?>/scripts/auth/auth_form.php">Авторизуватися</a>
+        <a href="<?php echo Clinic_Workdir?>/scripts/reg/reg-form.php">Реєстрація</a>
+    <?php } else { ?>
+        <a href="<?php echo Clinic_Workdir?>/exit.php">Вийти</a>
+    <?php } ?>
+</div>
 <div class="page-wrapper">
     <section class="registration-section">
         <div class="registration-form-wrapper">
@@ -75,15 +91,15 @@ session_start();
                                 if (mysqli_num_rows($res) > 0) {
                                     echo '<h1 class="form-title" style="text-align: center; font-size: 25px;">Призначити роль користувачу</h1>';
                                     echo '<h1 class="form-label" style="text-align: center; font-size: 20px;"> Користувач </h1><br>';
-                                    echo '<select class="form-input form-input-select" style="width: 350px;" name="userEmail" id="userEmail" required>';
+                                    echo '<select class="form-input form-input-select" style="width: 440px;" name="userEmail" id="userEmail" required>';
                                     $currentUser = $res->fetch_assoc();
-                                    echo '<option value="'. $currentUser['user_id'] .'" selected>' . $currentUser['user_id'] . ' - ' . $currentUser['user_email'] . '</option>';
+                                    echo '<option value="'. $currentUser['user_id'] .'" selected>' . $currentUser['user_id'] . '- ' . $currentUser['user_email'] . ' - ' . (($currentUser['user_role'] == 2) ? 'Адміністратор' : (($currentUser['user_role'] == 1) ? 'Оператор' :  'Користувач') ). '</option>';
                                     while ($currentUser = $res->fetch_assoc()) {
-                                        echo '<option value="'. $currentUser['user_id'] .'">' . $currentUser['user_id'] . ' - ' . $currentUser['user_email'] . '</option>';
+                                        echo '<option value="'. $currentUser['user_id'] .'">' . $currentUser['user_id'] . '- ' . $currentUser['user_email'] . ' - ' . (($currentUser['user_role'] == 2) ? 'Адміністратор' : (($currentUser['user_role'] == 1) ? 'Оператор' :  'Користувач') ). '</option>';
                                     }
                                     echo '</select>';
                                     echo '<h1 class="form-label" style="text-align: center; font-size: 20px;"> Роль</h1><br>';
-                                    echo '<select class="form-input form-input-select" style="width: 350px;" name="role" id="role" required>
+                                    echo '<select class="form-input form-input-select" style="width: 440px;" name="role" id="role" required>
                                     <option value="0" selected>Звичайний користувач</option>
                                     <option value="1">Оператор</option>
                                     <option value="2">Адімінстратор</option>

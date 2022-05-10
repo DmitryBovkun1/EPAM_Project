@@ -16,7 +16,7 @@ session_start();
 <body class = "body-notify">
 <div class = "notify-div">
     <div class = "notify-div-block">
-        <img class = "success-form-image" src="./Assets/success.png">
+        <img class = "success-form-image" src="./Assets/exit.jpg">
         <div class = "notify-div-block-text">
             <?php
             session_unset();

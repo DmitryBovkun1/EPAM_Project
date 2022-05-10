@@ -23,33 +23,49 @@
                     <a class="nav-menu-item" type="submit" style="cursor: pointer;" onclick="window.location.href='/index.php'">Головна</a>
                     <a class="nav-menu-item" type="submit" style="cursor: pointer;" onclick="window.location.href='/history.php'">Пошук заявок</a>
                     <?php if ($_SESSION['role'] == 2 && $_SESSION['user'] == true){?>
-                    <a class="nav-menu-item" type="submit" style="cursor: pointer;" onclick="window.location.href='/panel.php'">Змінити роль користувача</a>
+                        <a class="nav-menu-item" type="submit" style="cursor: pointer;" onclick="window.location.href='/panel.php'">Змінити роль користувача</a>
                     <?php } elseif ($_SESSION['role'] == 1 && $_SESSION['user'] == true) {?>
-                    <a class="nav-menu-item" type="submit" style="cursor: pointer;" onclick="window.location.href='/history.php'">Обрати заявки на обробку</a>
+                        <a class="nav-menu-item" type="submit" style="cursor: pointer;" onclick="window.location.href='/history.php'">Обрати заявки на обробку</a>
                     <?php } elseif ($_SESSION['role'] == 0 && $_SESSION['user'] == true){?>
-                    <a class="nav-menu-item" type="submit" style="cursor: pointer;" onclick="window.location.href='/index.php'">Вітаємо, <?php echo $_SESSION['user']; ?></a>
+                        <a class="nav-menu-item" type="submit" style="cursor: pointer;" onclick="window.location.href='/index.php'">Вітаємо, <?php echo $_SESSION['username']; ?></a>
                     <?php } else {?>
-                    <a class="nav-menu-item" type="submit" style="cursor: pointer;" onclick="window.location.href='scripts/auth/auth_form.php'">Авторизація</a>
+                        <a class="nav-menu-item" type="submit" style="cursor: pointer;" onclick="window.location.href='scripts/auth/auth_form.php'">Авторизація</a>
                     <?php } ?>
 
                     <div class="dropdown nav-menu-icon">
                         <button onclick="myFunction()" class="drop-btn"></button>
                         <div id="myDropdown" class="dropdown-content">
                             <?php if ($_SESSION['user'] == false) { ?>
-                            <a style="cursor: pointer;" onclick="window.location.href='scripts/auth/auth_form.php'">Авторизація</a>
-                            <a style="cursor: pointer;" onclick="window.location.href='scripts/reg/reg-form.php'">Реєстрація</a>
+                                <a style="cursor: pointer;" onclick="window.location.href='scripts/auth/auth_form.php'">Авторизація</a>
+                                <a style="cursor: pointer;" onclick="window.location.href='scripts/reg/reg-form.php'">Реєстрація</a>
                             <?php } else { ?>
-                            <a style="cursor: pointer;" onclick="window.location.href='/exit.php'">Вийти</a>
+                                <a style="cursor: pointer;" onclick="window.location.href='/exit.php'">Вийти</a>
                             <?php }?>
                         </div>
                     </div>
 
                 </div>
-
-                <div class="menu-button"></div>
+                <button class="open-btn" onclick="openNav()">&#9776;</button>
             </div>
         </nav>
     </header>
+    <div class="nav-bar-mobile" id="mySidepanel">
+        <a href="javascript:void(0)" class="close-btn" onclick="closeNav()">&times;</a>
+        <a href="<?php echo Clinic_Workdir?>">Головна</a>
+        <a href="<?php echo Clinic_Workdir?>/history.php">Пошук заявок</a>
+        <?php if ($_SESSION['role'] == 2 && $_SESSION['user'] == true){?>
+            <a href="<?php echo Clinic_Workdir?>/panel.php">Змінити роль користувача</a>
+        <?php } ?>
+        <?php if ($_SESSION['role'] == 1 && $_SESSION['user'] == true) {?>
+            <a href="<?php echo Clinic_Workdir?>/history.php">Обрати заявки на обробку</a>
+        <?php } ?>
+        <?php if ($_SESSION['user'] == false) { ?>
+            <a href="<?php echo Clinic_Workdir?>/scripts/auth/auth_form.php">Авторизуватися</a>
+            <a href="<?php echo Clinic_Workdir?>/scripts/reg/reg-form.php">Реєстрація</a>
+        <?php } else { ?>
+            <a href="<?php echo Clinic_Workdir?>/exit.php">Вийти</a>
+        <?php } ?>
+    </div>
     <div class="page-wrapper">
         <section class="registration-section">
             <div class="registration-form-wrapper">
