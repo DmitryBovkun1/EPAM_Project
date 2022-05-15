@@ -16,6 +16,7 @@
 4) history.php - перегляд заявок у системі, можливість їх фільтрації та відправки переглянутих заявок у обробку (останнє тільки для адміністраторів та операторів).
 ![alt text](Description/not_authorized_history.png) 
 ![alt text](Description/authorized_history.png) 
+![alt text](Description/operator_history.png) 
 5) index.php - головна сторінка на якій можуть ввести свої дані для відправлення заявки як авторизовані клієнти так і не авторизовані.
 ![alt text](Description/not_authorized_index.png) 
 ![alt text](Description/authorized_index.png) 
