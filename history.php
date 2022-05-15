@@ -167,7 +167,7 @@ session_start();
                         }
                         echo "<tr>";
                         echo "<td class = \"td\">" . $req['requests_id'] . "</td>";
-                        echo "<td class = \"td\">" . $req['user_name'] . "</td>";
+                        echo "<td class = \"td\">" . htmlentities($req['user_name']) . "</td>";
                         echo "<td class = \"td\">" . $req['user_phone'] . "</td>";
                         echo "<td class = \"td\">" . $pro . "</td>";
                         echo "<td class = \"td\">" . $req['requests_status'] . "</td>";
